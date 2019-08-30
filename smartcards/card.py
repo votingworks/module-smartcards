@@ -1,68 +1,66 @@
 
-##
-#
-# A card holds a short and a long value.
-#
-# The short value is something like an identifier or a hash. At most 63 bytes.
-#
-# The long value can be as long as 65,536 bytes, though for now we only support
-# the AT24C256 card, which has a total capacity of 32,768 bytes (only about 32,500 bytes
-# can be used for the long value.)
-#
-# The long value is not fetched by default, as that takes a while.
-# 
-# Data Format on a card is:
-#
-# "VX." - 3 ascii byte identifier
-# <version_number> - 1 byte
-# <write_protection> - 1 byte
-# <short_value_length> - 1 byte
-# <long_value_length> - 2 bytes
-# <short_value> - up to 63 bytes
-# <long_value> - up to 16,500 bytes
+# See architecture.md for details on card format
 
 from smartcard.CardMonitoring import CardMonitor, CardObserver
 from smartcard.util import toHexString, toASCIIBytes, toASCIIString
 import gzip, time
 
-WRITABLE = [0x00]
-WRITE_PROTECTED = [0x01]
-VERSION = [0x01]
+WRITABLE = [0x0]
+WRITE_PROTECTED = [0x1]
+
+PLAINTEXT_MODE = [0x0]
+PIN_ENCRYPTED_MODE = [0x1]
+KEY_ENCRYPTED_MODE = [0x2]
+
+VERSION = [0x2]
 
 class Card:
     def __init__(self, pyscard_card, pyscard_connection):
         self.card = pyscard_card
         self.connection = pyscard_connection
         self.write_enabled = True
+        self.encryption_mode = PLAINTEXT_MODE
         self.short_value = None
-        self.long_value = None
-        self.short_value_length = 0
         self.long_value_length = 0
         self.read_raw_first_chunk()
 
-    def __initial_bytes(self, writable, short_length, long_length):
-        initial_bytes = b'VX.'+ bytes(VERSION) + bytes(writable)
-        initial_bytes += bytes([short_length]) + long_length.to_bytes(2,'big')
+    def __dataprops_bytes(self):
+        value = (WRITABLE if self.write_enabled else WRITE_PROTECTED) << 7
+        value &= self.encryption_mode << 4
+        return bytes([value])
+        
+    def __initial_bytes(self):
+        initial_bytes = b'VX.'+ bytes(VERSION) + self.__dataprops_bytes()
         return initial_bytes
+
+    def __plaintext_payload_bytes(self, short_value, long_value):
+        payload_bytes = bytes([len(short_value)]) + len(long_value).to_bytes(2,'big')
+        payload_bytes += short_value + long_value
+        return payload_bytes
+
+    def __payload_bytes(self):
+        return self.__plaintext_payload_bytes()
 
     # override the write protection bit. Typically used
     # right before a call to write_short_value or write_short_and_long_values
     def override_protection(self):
         self.write_enabled=True
         
-    def write_short_value(self, short_value_bytes, write_protect=False):
+    def write_short_value(self, short_value, write_protect=False):
         if not self.write_enabled:
             return
 
-        if len(short_value_bytes) > 250:
+        if len(short_value) > 250:
             return
+
+        self.long_value_length = 0
         
-        full_bytes = self.__initial_bytes(WRITE_PROTECTED if write_protect else WRITABLE, len(short_value_bytes), 0)
-        full_bytes += short_value_bytes
+        full_bytes = self.__initial_bytes()
+        full_bytes += self.__payload_bytes(short_value, [])
         self.write_chunk(0, full_bytes)
         time.sleep(1)
 
-    def write_short_and_long_values(self, short_value_bytes, long_value_bytes):
+    def write_short_and_long_values(self, short_value, long_value):
         if not self.write_enabled:
             return
 
@@ -72,9 +70,10 @@ class Card:
             return
         
         # by default, we write protect the cards with short-and-long values
-        full_bytes = self.__initial_bytes(WRITE_PROTECTED, len(short_value_bytes), len(long_value_compressed))
-        full_bytes += short_value_bytes
-        full_bytes += long_value_compressed
+        self.write_enabled = False
+        self.long_value_length = len(long_value_compressed)
+        
+        full_bytes = self.__initial_bytes() + self.__payload_bytes(short_value, long_value)
 
         offset_into_bytes = 0
         chunk_num = 0
@@ -95,23 +94,20 @@ class Card:
             return None
 
         self.write_enabled = ([data[4]] == WRITABLE)
-        self.short_value_length = data[5]
+        short_value_length = data[5]
         self.long_value_length = data[6]*256 + data[7]
-        self.short_value = bytes(data[8:8+self.short_value_length])
+        self.short_value = bytes(data[8:8+short_value_length])
 
         return bytes(data)
         
     def read_short_value(self):
         self.read_raw_first_chunk()
-        if self.short_value:
-            return bytes(self.short_value)
-        else:
-            return b''
+        return self.short_value or b''
 
     def read_long_value(self):
         full_bytes = self.read_raw_first_chunk()
         
-        total_expected_length = 8 + self.short_value_length + self.long_value_length
+        total_expected_length = 8 + len(self.short_value) + self.long_value_length
 
         read_so_far = len(full_bytes)
         chunk_num = 1
@@ -120,7 +116,7 @@ class Card:
             read_so_far += self.CHUNK_SIZE
             chunk_num += 1
 
-        compressed_content = full_bytes[8+self.short_value_length:total_expected_length]
+        compressed_content = full_bytes[8+len(self.short_value):total_expected_length]
         return gzip.decompress(compressed_content)
 
     # to implement in subclass
