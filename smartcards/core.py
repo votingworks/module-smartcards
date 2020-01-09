@@ -46,6 +46,14 @@ def card_write():
     rv = CardInterface.write(content)
     return json.dumps({"success": rv})
 
+# this method exists so that we can write to the actual card
+# even while the read is being mocked.
+@app.route('/card/write-no-mock', methods=["POST"])
+def card_write_no_mock():
+    content = request.data
+    rv = RealInstance.write(content)
+    return json.dumps({"success": rv})
+
 
 @app.route('/card/write_and_protect', methods=["POST"])
 def card_write_and_protect():
