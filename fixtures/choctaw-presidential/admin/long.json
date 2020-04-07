@@ -1,0 +1,239 @@
+{
+  "title": "General Election",
+  "state": "State of Mississippi",
+  "county": {
+    "id": "10",
+    "name": "Choctaw County"
+  },
+  "date": "November 3, 2020",
+  "parties": [
+    {
+      "id": "2",
+      "name": "Democrat",
+      "abbrev": "D"
+    },
+    {
+      "id": "3",
+      "name": "Republican",
+      "abbrev": "R"
+    },
+    {
+      "id": "4",
+      "name": "Libertarian",
+      "abbrev": "L"
+    },
+    {
+      "id": "5",
+      "name": "Reform",
+      "abbrev": "REF"
+    },
+    {
+      "id": "6",
+      "name": "Natural Law",
+      "abbrev": "N"
+    },
+    {
+      "id": "8",
+      "name": "Constitution",
+      "abbrev": "C"
+    },
+    {
+      "id": "9",
+      "name": "Green",
+      "abbrev": "G"
+    },
+    {
+      "id": "10",
+      "name": "America First",
+      "abbrev": "A"
+    },
+    {
+      "id": "11",
+      "name": "Independent",
+      "abbrev": "I"
+    },
+    {
+      "id": "12",
+      "name": "Nonpartisan",
+      "abbrev": "NP"
+    },
+    {
+      "id": "575000001",
+      "name": "Justice",
+      "abbrev": "JUS"
+    },
+    {
+      "id": "575000002",
+      "name": "Prohibition",
+      "abbrev": "PRO"
+    },
+    {
+      "id": "575000003",
+      "name": "American Delta",
+      "abbrev": "ADP"
+    },
+    {
+      "id": "575000004",
+      "name": "Veterans",
+      "abbrev": "VET"
+    }
+  ],
+  "contests": [
+    {
+      "id": "775020738",
+      "section": "United States",
+      "districtId": "100000275",
+      "type": "candidate",
+      "official_label": "President-Democrat",
+      "title": "President",
+      "seats": 1,
+      "allowWriteIns": true,
+      "candidates": [
+        {
+          "id": "775031649",
+          "name": "Joseph R. Biden",
+          "partyId": "2"
+        },
+        {
+          "id": "775031648",
+          "name": "Donald J. Trump",
+          "partyId": "3"
+        }
+      ]
+    },
+    {
+      "id": "775020740",
+      "section": "United States",
+      "districtId": "100000275",
+      "type": "candidate",
+      "official_label": "Senate -Democrat",
+      "title": "Senate",
+      "seats": 1,
+      "allowWriteIns": true,
+      "candidates": [
+        {
+          "id": "775031633",
+          "name": "Mike Espy",
+          "partyId": "2"
+        },
+        {
+          "id": "775031639",
+          "name": "Cindy Hyde-Smith",
+          "partyId": "3"
+        }
+      ]
+    },
+    {
+      "id": "38474894",
+      "section": "State",
+      "districtId": "100000275",
+      "type": "yesno",
+      "short_title": "Statewide Recycling Program",
+      "title": "Proposition R: Statewide Recycling Program",
+      "description": "Shall the State of Mississippi extend the Recycling Program statewide?"
+    }
+  ],
+  "districts": [
+    {
+      "id": "100000275",
+      "name": "State Of Mississippi"
+    }
+  ],
+  "precincts": [
+    {
+      "id": "6522",
+      "name": "District 5"
+    },
+    {
+      "id": "6524",
+      "name": "Chester"
+    },
+    {
+      "id": "6525",
+      "name": "East Weir"
+    },
+    {
+      "id": "6526",
+      "name": "French Camp"
+    },
+    {
+      "id": "6527",
+      "name": "Fentress"
+    },
+    {
+      "id": "6528",
+      "name": "Hebron"
+    },
+    {
+      "id": "6529",
+      "name": "Kenego"
+    },
+    {
+      "id": "6532",
+      "name": "Panhandle"
+    },
+    {
+      "id": "6534",
+      "name": "Reform"
+    },
+    {
+      "id": "6536",
+      "name": "Sherwood"
+    },
+    {
+      "id": "6537",
+      "name": "Southwest Ackerman"
+    },
+    {
+      "id": "6538",
+      "name": "Bywy"
+    },
+    {
+      "id": "6539",
+      "name": "West Weir"
+    }
+  ],
+  "ballotStyles": [
+    {
+      "id": "1",
+      "precincts": ["6538"],
+      "districts": ["100000275"]
+    },
+    {
+      "id": "8",
+      "precincts": ["6538", "6524", "6527"],
+      "districts": ["100000275"]
+    },
+    {
+      "id": "1",
+      "precincts": ["6522"],
+      "districts": ["100000275"]
+    },
+    {
+      "id": "2",
+      "precincts": ["6522"],
+      "districts": ["100000275"]
+    },
+    {
+      "id": "3",
+      "precincts": ["6525", "6532", "6537"],
+      "districts": ["100000275"]
+    },
+    {
+      "id": "4",
+      "precincts": ["6526", "6529", "6539"],
+      "districts": ["100000275"]
+    },
+    {
+      "id": "6",
+      "precincts": ["6527"],
+      "districts": ["100000275"]
+    },
+    {
+      "id": "5",
+      "precincts": ["6528", "6534", "6536"],
+      "districts": ["100000275"]
+    }
+  ],
+  "sealURL": "/seals/Seal_of_Mississippi_BW.svg"
+}
